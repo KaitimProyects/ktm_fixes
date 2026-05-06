@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTM MRP Fixes - Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 25px;
+        }
+        .fix-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+        }
+        .fix-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .fix-card .meta {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+        li:before {
+            content: "✓";
+            color: #27ae60;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        .technical-info {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+        .warning {
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #dc3545;
+        }
+        .success {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #27ae60;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .version-badge {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.78em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .status-temp {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        .step-box {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #2980b9;
+        }
+        .step-box h4 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th {
+            background: #3498db;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        tr:nth-child(even) td {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KTM MRP Fixes <span class="version-badge">v18.0.1.0.0</span></h1>
+
+        <p style="font-size: 1.1em; color: #666;">
+            Temporary patches for known Odoo MRP core bugs. Each fix is isolated, documented with its
+            upstream reference, and designed to be removed as soon as Odoo ships the official solution.
+        </p>
+
+        <h2>📦 What is This Module?</h2>
+        <div class="highlight">
+            <strong>KTM MRP Fixes</strong> is a rolling patch module that accumulates <strong>temporary workarounds</strong>
+            for bugs found in Odoo's Manufacturing (MRP) core. Instead of touching the core or maintaining
+            forks, fixes land here with clear upstream tracking so they can be cleanly removed once Odoo resolves them.
+        </div>
+
+        <h2>🔧 Active Fixes</h2>
+
+        <!-- FIX #1 -->
+        <div class="fix-card">
+            <h3>
+                MO truncates components to 40 when BOM has more lines
+                <span class="status-badge status-temp">Temporary — Pending upstream fix</span>
+            </h3>
+            <div class="meta">
+                Upstream reference: commit <code>3d43d9d9</code> (PERF: respect limit during onchange fetch) &nbsp;|&nbsp;
+                Added: 2026-05-05
+            </div>
+            <p>
+                When a Bill of Materials has more than 40 components, creating or opening a Manufacturing Order
+                silently truncates <code>move_raw_ids</code> to the first 40. This happens because commit
+                <code>3d43d9d9</code> made the backend respect the <code>limit</code> attribute sent by the
+                frontend list view — which defaults to 40 — causing the onchange snapshot to drop every component
+                beyond that threshold.
+            </p>
+            <div class="technical-info">
+                <strong>Fix:</strong> Inherits <code>mrp.mrp_production_form_view</code> and sets
+                <code>limit="500"</code> on the <code>move_raw_ids</code> list widget, raising the threshold
+                above any realistic BOM size.
+            </div>
+            <div class="warning">
+                <strong>Remove when:</strong> Odoo core sets a sensible default limit on <code>move_raw_ids</code>
+                or exposes a configuration key. Check the upstream issue tracker before each Odoo upgrade.
+            </div>
+        </div>
+
+        <h2>⚙️ Convention for New Fixes</h2>
+
+        <p>Every fix added to this module must follow this pattern:</p>
+
+        <div class="step-box">
+            <h4>1. Document the root cause</h4>
+            <p>Include the upstream commit hash or issue URL in a comment inside the XML/Python file.</p>
+        </div>
+        <div class="step-box">
+            <h4>2. Define a removal condition</h4>
+            <p>State explicitly when the fix should be removed (e.g., "Remove when Odoo 18.1 is installed").</p>
+        </div>
+        <div class="step-box">
+            <h4>3. Update this document</h4>
+            <p>Add an entry in the <strong>Active Fixes</strong> section above with the same upstream reference and date.</p>
+        </div>
+        <div class="step-box">
+            <h4>4. Move to "Removed Fixes" when resolved</h4>
+            <p>Don't delete the entry — archive it below so there is a historical record of what was patched and why.</p>
+        </div>
+
+        <h2>🗃️ Removed Fixes</h2>
+        <p style="color: #888;">No fixes have been removed yet. This section will record fixes that were deleted after Odoo shipped the official solution.</p>
+
+        <h2>🔧 Installation</h2>
+
+        <div class="step-box">
+            <h4>Install the Module</h4>
+            <ol>
+                <li>Ensure this module is in your Odoo addons path</li>
+                <li>Update the apps list: <code>Apps → Update Apps List</code></li>
+                <li>Install <strong>KTM MRP Fixes</strong> from Apps → Manufacturing</li>
+            </ol>
+        </div>
+
+        <h2>⚙️ Technical Details</h2>
+        <div class="technical-info">
+            <h3>Module Dependencies:</h3>
+            <ul>
+                <li><strong>mrp:</strong> Manufacturing module (Odoo core)</li>
+            </ul>
+
+            <h3>Fix Inventory:</h3>
+            <table>
+                <tr>
+                    <th>Fix</th>
+                    <th>File</th>
+                    <th>Upstream Ref</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <td>move_raw_ids limit → 500</td>
+                    <td><code>views/mrp_production_views.xml</code></td>
+                    <td>commit 3d43d9d9</td>
+                    <td>Active</td>
+                </tr>
+            </table>
+        </div>
+
+        <h2>📋 Requirements</h2>
+        <ul>
+            <li>Odoo 18.0 or later</li>
+            <li>MRP (Manufacturing) module installed</li>
+        </ul>
+
+        <div class="contact-info">
+            <h2>📞 Support &amp; Contact</h2>
+            <p>
+                <strong>Author:</strong> Kaitim S.A. de C.V.<br>
+                <strong>Website:</strong> <a href="https://www.kaitim.com" target="_blank">www.kaitim.com</a><br>
+                <strong>Email:</strong> <a href="mailto:soporte@kaitim.com">soporte@kaitim.com</a>
+            </p>
+            <p style="margin-top: 15px; color: #666; font-size: 0.9em;">
+                For technical support, feature requests, or customization services, please contact our development team.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
